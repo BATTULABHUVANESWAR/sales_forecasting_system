@@ -63,7 +63,7 @@ LOCAL_MODEL_PATH = (
 # ============================================================
 
 HF_DATA_FILENAME = (
-    "ml_features.csv"
+    "forecasting_history.csv"
 )
 
 LOCAL_DATA_DIR = (
@@ -161,7 +161,15 @@ def load_historical_data():
         )
 
         return pd.read_csv(
-            LOCAL_DATA_PATH
+            LOCAL_DATA_PATH,
+            dtype={
+                "Store": "int16",
+                "Dept": "int16",
+                "Weekly_Sales": "float32",
+                "Size": "int32",
+                "Type": "category",
+            },
+            parse_dates=["Date"],
         )
 
 
@@ -198,16 +206,22 @@ def load_historical_data():
 
 
     return pd.read_csv(
-        downloaded_path
+        downloaded_path,
+        dtype={
+            "Store": "int16",
+            "Dept": "int16",
+            "Weekly_Sales": "float32",
+            "Size": "int32",
+            "Type": "category",
+        },
+        parse_dates=["Date"],
     )
 
 
 history = load_historical_data()
 
 
-history["Date"] = pd.to_datetime(
-    history["Date"]
-)
+# Date is parsed during CSV loading.
 
 
 history = history.sort_values(
