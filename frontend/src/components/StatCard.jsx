@@ -5,71 +5,61 @@ function StatCard({
     icon,
     trend,
     trendLabel,
-    trendType = "positive",
 }) {
 
     return (
 
         <div className="stat-card">
 
-
             {/* ====================================================
-                TOP
+                TOP ROW
             ==================================================== */}
 
             <div className="stat-card-top">
 
-                <div className="stat-card-icon">
+                {/* ICON — TOP LEFT */}
 
+                <div
+                    className="stat-card-icon"
+                    aria-hidden="true"
+                >
                     {icon}
-
                 </div>
 
 
+                {/* TREND — TOP RIGHT */}
+
                 {trend && (
 
-                    <div
-                        className={
-                            `stat-card-trend ${trendType}`
-                        }
-                    >
-
+                    <span className="stat-card-trend-badge">
                         {trend}
-
-                    </div>
+                    </span>
 
                 )}
 
             </div>
 
 
-
             {/* ====================================================
-                CONTENT
+                CARD CONTENT
             ==================================================== */}
 
             <div className="stat-card-content">
 
                 <p className="stat-card-title">
-
                     {title}
-
                 </p>
 
 
                 <h3 className="stat-card-value">
-
                     {value}
-
                 </h3>
 
 
                 {subtitle && (
 
                     <p className="stat-card-subtitle">
-
                         {subtitle}
-
                     </p>
 
                 )}
@@ -77,14 +67,8 @@ function StatCard({
 
                 {trendLabel && (
 
-                    <p
-                        className={
-                            `stat-card-trend-label ${trendType}`
-                        }
-                    >
-
+                    <p className="stat-card-trend-label">
                         {trendLabel}
-
                     </p>
 
                 )}
