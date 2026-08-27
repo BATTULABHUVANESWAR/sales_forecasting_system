@@ -58,12 +58,29 @@ LOCAL_MODEL_PATH = (
 )
 
 
-DATA_PATH = (
+# ============================================================
+# HUGGING FACE HISTORICAL DATA
+# ============================================================
+
+HF_DATA_FILENAME = (
+    "ml_features.csv"
+)
+
+LOCAL_DATA_DIR = (
     PROJECT_ROOT
     / "backend"
     / "data"
     / "processed"
-    / "ml_features.csv"
+)
+
+LOCAL_DATA_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+LOCAL_DATA_PATH = (
+    LOCAL_DATA_DIR
+    / HF_DATA_FILENAME
 )
 
 
@@ -130,12 +147,62 @@ model = load_model()
 
 
 # ============================================================
-# LOAD HISTORICAL DATA
+# LOAD HISTORICAL DATA FROM HUGGING FACE
 # ============================================================
 
-history = pd.read_csv(
-    DATA_PATH
-)
+def load_historical_data():
+
+    # Use local cache when it already exists.
+    if LOCAL_DATA_PATH.exists():
+
+        print(
+            f"Loading historical data from local cache: "
+            f"{LOCAL_DATA_PATH}"
+        )
+
+        return pd.read_csv(
+            LOCAL_DATA_PATH
+        )
+
+
+    print(
+        "Historical data not found locally."
+    )
+
+    print(
+        "Downloading ml_features.csv from Hugging Face:"
+    )
+
+    print(
+        f"{HF_REPO_ID}/{HF_DATA_FILENAME}"
+    )
+
+
+    downloaded_path = hf_hub_download(
+
+        repo_id=
+            HF_REPO_ID,
+
+        filename=
+            HF_DATA_FILENAME,
+
+        local_dir=
+            LOCAL_DATA_DIR
+    )
+
+
+    print(
+        f"Historical data downloaded to: "
+        f"{downloaded_path}"
+    )
+
+
+    return pd.read_csv(
+        downloaded_path
+    )
+
+
+history = load_historical_data()
 
 
 history["Date"] = pd.to_datetime(
