@@ -1,176 +1,118 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 import {
-    LayoutDashboard,
-    TrendingUp,
-    History,
-    Settings,
-    LogOut,
-    BarChart3,
+    Menu,
+    X,
 } from "lucide-react";
+
+import SideBar from "./SideBar";
+import Navbar from "./Navbar";
 
 import "./Layout.css";
 
 
 function Layout({ children }) {
 
+    const [mobileMenuOpen, setMobileMenuOpen] =
+        useState(false);
+
+
+    const closeMobileMenu = () => {
+
+        setMobileMenuOpen(false);
+
+    };
+
+
     return (
 
         <div className="app-shell">
 
-            {/* ================================================= */}
-            {/* SIDEBAR */}
-            {/* ================================================= */}
 
-            <aside className="sidebar">
+            {/* ====================================================
+                MOBILE OVERLAY
+            ==================================================== */}
 
-                {/* LOGO */}
+            {mobileMenuOpen && (
 
-                <div className="brand">
+                <div
+                    className="mobile-overlay"
+                    onClick={closeMobileMenu}
+                    aria-hidden="true"
+                />
 
-                    <div className="brand-icon">
-
-                        <BarChart3
-                            size={22}
-                        />
-
-                    </div>
-
-                    <div className="brand-text">
-
-                        <strong>
-                            Sales
-                        </strong>
-
-                        <span>
-                            Forecast
-                        </span>
-
-                    </div>
-
-                </div>
+            )}
 
 
-                {/* NAVIGATION */}
+            {/* ====================================================
+                SIDEBAR
+            ==================================================== */}
 
-                <nav className="sidebar-nav">
-
-                    <NavLink
-                        to="/"
-                        end
-                        className={({ isActive }) =>
-                            `nav-item ${
-                                isActive
-                                    ? "active"
-                                    : ""
-                            }`
-                        }
-                    >
-
-                        <LayoutDashboard
-                            size={18}
-                        />
-
-                        <span>
-                            Dashboard
-                        </span>
-
-                    </NavLink>
+            <SideBar
+                mobileMenuOpen={
+                    mobileMenuOpen
+                }
+                closeMobileMenu={
+                    closeMobileMenu
+                }
+            />
 
 
-                    <NavLink
-                        to="/forecast"
-                        className={({ isActive }) =>
-                            `nav-item ${
-                                isActive
-                                    ? "active"
-                                    : ""
-                            }`
-                        }
-                    >
+            {/* ====================================================
+                MAIN AREA
+            ==================================================== */}
 
-                        <TrendingUp
-                            size={18}
-                        />
-
-                        <span>
-                            Forecast
-                        </span>
-
-                    </NavLink>
+            <div className="main-area">
 
 
-                    <NavLink
-                        to="/history"
-                        className={({ isActive }) =>
-                            `nav-item ${
-                                isActive
-                                    ? "active"
-                                    : ""
-                            }`
-                        }
-                    >
+                {/* =================================================
+                    MOBILE MENU BUTTON
+                ================================================= */}
 
-                        <History
-                            size={18}
-                        />
+                <button
+                    type="button"
+                    className="mobile-menu-button"
+                    onClick={() =>
+                        setMobileMenuOpen(
+                            (current) =>
+                                !current
+                        )
+                    }
+                    aria-label={
+                        mobileMenuOpen
+                            ? "Close navigation"
+                            : "Open navigation"
+                    }
+                >
 
-                        <span>
-                            History
-                        </span>
+                    {mobileMenuOpen ? (
 
-                    </NavLink>
+                        <X size={20} />
 
-                </nav>
+                    ) : (
 
+                        <Menu size={20} />
 
-                {/* BOTTOM NAV */}
+                    )}
 
-                <div className="sidebar-bottom">
-
-                    <button className="bottom-item">
-
-                        <Settings
-                            size={18}
-                        />
-
-                        <span>
-                            Settings
-                        </span>
-
-                    </button>
+                </button>
 
 
-                    <button className="bottom-item">
-
-                        <LogOut
-                            size={18}
-                        />
-
-                        <span>
-                            Logout
-                        </span>
-
-                    </button>
-
-                </div>
-
-            </aside>
+                <Navbar />
 
 
-            {/* ================================================= */}
-            {/* MAIN CONTENT */}
-            {/* ================================================= */}
+                <main className="main-content">
 
-            <main className="main-content">
+                    {children}
 
-                {children}
+                </main>
 
-            </main>
+            </div>
 
         </div>
 
     );
+
 }
 
 

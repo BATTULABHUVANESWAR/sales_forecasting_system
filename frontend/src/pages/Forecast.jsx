@@ -15,17 +15,12 @@ import {
     CheckCircle2,
     Loader2,
     Plus,
+    ArrowUpRight,
+    ArrowDownRight,
+    Minus,
 } from "lucide-react";
 
-import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-} from "recharts";
+import ForecastChart from "../components/ForecastChart";
 
 import "./Forecast.css";
 
@@ -526,6 +521,83 @@ function Forecast() {
 
 
     // ============================================================
+    // FORECAST DIRECTION
+    // ============================================================
+
+    const getForecastDirection = () => {
+
+        const values =
+            (forecastResult?.forecast || [])
+                .map((item) => Number(item.forecast))
+                .filter((value) => Number.isFinite(value));
+
+        if (values.length < 2) {
+
+            return {
+                type: "neutral",
+                label: "Stable",
+                description: "Not enough forecast points to determine a trend.",
+                icon: <Minus size={18} />,
+            };
+
+        }
+
+        const first = values[0];
+        const last = values[values.length - 1];
+
+        if (first === 0) {
+
+            return {
+                type: last > 0 ? "positive" : "neutral",
+                label: last > 0 ? "Growing" : "Stable",
+                description:
+                    last > 0
+                        ? "Forecast sales increase across the horizon."
+                        : "Forecast sales remain stable.",
+                icon:
+                    last > 0
+                        ? <ArrowUpRight size={18} />
+                        : <Minus size={18} />,
+            };
+
+        }
+
+        const change = ((last - first) / Math.abs(first)) * 100;
+
+        if (Math.abs(change) < 2) {
+
+            return {
+                type: "neutral",
+                label: "Stable",
+                description: "Forecast sales remain broadly stable.",
+                icon: <Minus size={18} />,
+            };
+
+        }
+
+        if (change > 0) {
+
+            return {
+                type: "positive",
+                label: "Growing",
+                description:
+                    `Forecast sales rise ${Math.abs(change).toFixed(1)}% from the first to last week.`,
+                icon: <ArrowUpRight size={18} />,
+            };
+
+        }
+
+        return {
+            type: "negative",
+            label: "Declining",
+            description:
+                `Forecast sales fall ${Math.abs(change).toFixed(1)}% from the first to last week.`,
+            icon: <ArrowDownRight size={18} />,
+        };
+
+    };
+
+    // ============================================================
     // LOADING
     // ============================================================
 
@@ -883,36 +955,40 @@ function Forecast() {
                                 </label>
 
 
-                                <select
-                                    value={horizon}
-                                    onChange={(
-                                        event
-                                    ) =>
-                                        setHorizon(
-                                            Number(
-                                                event.target.value
-                                            )
-                                        )
-                                    }
-                                >
+                                <div className="horizon-options">
 
-                                    <option value={1}>
-                                        1 Week
-                                    </option>
+                                    {[1, 4, 8, 12].map((weeks) => (
 
-                                    <option value={4}>
-                                        4 Weeks
-                                    </option>
+                                        <button
+                                            key={weeks}
+                                            type="button"
+                                            className={
+                                                `horizon-option ${
+                                                    horizon === weeks
+                                                        ? "selected"
+                                                        : ""
+                                                }`
+                                            }
+                                            onClick={() =>
+                                                setHorizon(weeks)
+                                            }
+                                        >
 
-                                    <option value={8}>
-                                        8 Weeks
-                                    </option>
+                                            <strong>
+                                                {weeks}
+                                            </strong>
 
-                                    <option value={12}>
-                                        12 Weeks
-                                    </option>
+                                            <span>
+                                                {weeks === 1
+                                                    ? "Week"
+                                                    : "Weeks"}
+                                            </span>
 
-                                </select>
+                                        </button>
+
+                                    ))}
+
+                                </div>
 
                             </div>
 
@@ -955,9 +1031,11 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <Store size={15} />
 
                                     Store Name
+
                                 </label>
 
 
@@ -1054,11 +1132,13 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <Layers3
                                         size={15}
                                     />
 
                                     Department
+
                                 </label>
 
 
@@ -1107,46 +1187,50 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <CalendarDays
                                         size={15}
                                     />
 
                                     Forecast Horizon
+
                                 </label>
 
 
-                                <select
-                                    value={
-                                        horizon
-                                    }
-                                    onChange={(
-                                        event
-                                    ) =>
-                                        setHorizon(
-                                            Number(
-                                                event.target.value
-                                            )
-                                        )
-                                    }
-                                >
+                                <div className="horizon-options">
 
-                                    <option value={1}>
-                                        1 Week
-                                    </option>
+                                    {[1, 4, 8, 12].map((weeks) => (
 
-                                    <option value={4}>
-                                        4 Weeks
-                                    </option>
+                                        <button
+                                            key={weeks}
+                                            type="button"
+                                            className={
+                                                `horizon-option ${
+                                                    horizon === weeks
+                                                        ? "selected"
+                                                        : ""
+                                                }`
+                                            }
+                                            onClick={() =>
+                                                setHorizon(weeks)
+                                            }
+                                        >
 
-                                    <option value={8}>
-                                        8 Weeks
-                                    </option>
+                                            <strong>
+                                                {weeks}
+                                            </strong>
 
-                                    <option value={12}>
-                                        12 Weeks
-                                    </option>
+                                            <span>
+                                                {weeks === 1
+                                                    ? "Week"
+                                                    : "Weeks"}
+                                            </span>
 
-                                </select>
+                                        </button>
+
+                                    ))}
+
+                                </div>
 
                             </div>
 
@@ -1188,11 +1272,13 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <Store
                                         size={15}
                                     />
 
                                     Store
+
                                 </label>
 
 
@@ -1241,11 +1327,13 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <Layers3
                                         size={15}
                                     />
 
                                     Department Name
+
                                 </label>
 
 
@@ -1341,47 +1429,49 @@ function Forecast() {
                             <div className="form-group">
 
                                 <label>
+
                                     <CalendarDays
                                         size={15}
                                     />
 
                                     Forecast Horizon
+
                                 </label>
 
+                                <div className="horizon-options">
 
-                                <select
-                                    value={
-                                        horizon
-                                    }
-                                    onChange={(
-                                        event
-                                    ) =>
-                                        setHorizon(
-                                            Number(
-                                                event.target.value
-                                            )
-                                        )
-                                    }
-                                >
+                                        {[1, 4, 8, 12].map((weeks) => (
 
-                                    <option value={1}>
-                                        1 Week
-                                    </option>
+                                            <button
+                                                key={weeks}
+                                                type="button"
+                                                className={
+                                                    `horizon-option ${
+                                                        horizon === weeks
+                                                            ? "selected"
+                                                            : ""
+                                                    }`
+                                                }
+                                                onClick={() =>
+                                                    setHorizon(weeks)
+                                                }
+                                            >
 
-                                    <option value={4}>
-                                        4 Weeks
-                                    </option>
+                                                <strong>
+                                                    {weeks}
+                                                </strong>
 
-                                    <option value={8}>
-                                        8 Weeks
-                                    </option>
+                                                <span>
+                                                    {weeks === 1
+                                                        ? "Week"
+                                                        : "Weeks"}
+                                                </span>
 
-                                    <option value={12}>
-                                        12 Weeks
-                                    </option>
+                                            </button>
 
-                                </select>
+                                        ))}
 
+                                </div>
                             </div>
 
                         </div>
@@ -1499,6 +1589,10 @@ function Forecast() {
                                 }
 
                             </h2>
+
+                            <p className="result-context">
+                                {horizon} week forecast • Generated just now
+                            </p>
 
                         </div>
 
@@ -1630,6 +1724,46 @@ function Forecast() {
 
                         </div>
 
+
+                        {(() => {
+
+                            const direction =
+                                getForecastDirection();
+
+                            return (
+
+                                <div
+                                    className={
+                                        `result-direction ${direction.type}`
+                                    }
+                                >
+
+                                    <div className="direction-icon">
+                                        {direction.icon}
+                                    </div>
+
+                                    <div className="direction-content">
+
+                                        <span>
+                                            Forecast Direction
+                                        </span>
+
+                                        <strong>
+                                            {direction.label}
+                                        </strong>
+
+                                        <small>
+                                            {direction.description}
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            );
+
+                        })()}
+
                     </div>
 
 
@@ -1658,51 +1792,14 @@ function Forecast() {
                         </div>
 
 
-                        <div className="forecast-chart">
+                        <div className="forecast-chart-wrapper">
 
-                            <ResponsiveContainer
-                                width="100%"
-                                height="100%"
-                            >
-
-                                <LineChart
-                                    data={
-                                        forecastResult.forecast
-                                    }
-                                >
-
-                                    <CartesianGrid
-                                        strokeDasharray="3 3"
-                                    />
-
-                                    <XAxis
-                                        dataKey="date"
-                                    />
-
-                                    <YAxis />
-
-                                    <Tooltip
-                                        formatter={(
-                                            value
-                                        ) =>
-                                            formatCurrency(
-                                                value
-                                            )
-                                        }
-                                    />
-
-                                    <Line
-                                        type="monotone"
-                                        dataKey="forecast"
-                                        strokeWidth={3}
-                                        dot={{
-                                            r: 4,
-                                        }}
-                                    />
-
-                                </LineChart>
-
-                            </ResponsiveContainer>
+                            <ForecastChart
+                                data={
+                                    forecastResult.forecast || []
+                                }
+                                height={350}
+                            />
 
                         </div>
 

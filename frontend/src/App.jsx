@@ -12,6 +12,7 @@ import Forecast from "./pages/Forecast";
 
 import History from "./pages/History";
 
+import Settings from "./pages/Settings";
 import "./App.css";
 
 
@@ -46,6 +47,12 @@ function App() {
                         }
                     />
 
+                    <Route
+                        path="/settings"
+                        element={
+                            <Settings />
+                        }
+                    />
                 </Routes>
 
             </Layout>

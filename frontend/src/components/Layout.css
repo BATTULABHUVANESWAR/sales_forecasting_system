@@ -1,9 +1,13 @@
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+
 .app-shell {
     min-height: 100vh;
 
     display: flex;
 
-    background: #f6f8fc;
+    background: #f5f7fb;
 }
 
 
@@ -12,25 +16,36 @@
    ============================================================ */
 
 .sidebar {
-    width: 240px;
+    width: 252px;
 
     min-height: 100vh;
 
     display: flex;
+
     flex-direction: column;
 
-    padding: 22px 16px;
+    padding: 22px 14px;
 
     background:
         linear-gradient(
             180deg,
-            #0b1b3a 0%,
-            #08152e 100%
+            #0b1935 0%,
+            #071226 100%
         );
 
     color: white;
 
     flex-shrink: 0;
+
+    position: sticky;
+
+    top: 0;
+
+    height: 100vh;
+
+    box-sizing: border-box;
+
+    z-index: 100;
 }
 
 
@@ -45,25 +60,43 @@
 
     gap: 12px;
 
-    padding: 4px 8px 30px;
+    padding:
+        4px
+        9px
+        26px;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.07);
 }
 
 .brand-icon {
     width: 40px;
+
     height: 40px;
 
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
-    border-radius: 10px;
+    flex-shrink: 0;
 
-    background: #2563eb;
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color: #ffffff;
 
     box-shadow:
-        0 8px 20px
-        rgba(37, 99, 235, 0.3);
+        0 8px 22px
+        rgba(37, 99, 235, 0.28);
 }
 
 .brand-text {
@@ -71,19 +104,27 @@
 
     flex-direction: column;
 
-    line-height: 1.1;
+    line-height: 1.15;
+
+    min-width: 0;
 }
 
 .brand-text strong {
-    font-size: 15px;
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: -0.1px;
 }
 
 .brand-text span {
-    font-size: 11px;
+    font-size: 10px;
 
-    color: #9fb0ca;
+    color: #91a2bf;
 
-    margin-top: 4px;
+    margin-top: 5px;
+
+    white-space: nowrap;
 }
 
 
@@ -92,75 +133,60 @@
    ============================================================ */
 
 .sidebar-nav {
+    flex: 1;
+
     display: flex;
 
     flex-direction: column;
 
-    gap: 6px;
+    gap: 18px;
+
+    padding-top: 22px;
+
+    overflow-y: auto;
+
+    scrollbar-width: none;
 }
 
-.nav-item {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 12px 13px;
-
-    border-radius: 9px;
-
-    color: #b9c5d8;
-
-    text-decoration: none;
-
-    font-size: 14px;
-
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
-}
-
-.nav-item:hover {
-    color: white;
-
-    background:
-        rgba(255, 255, 255, 0.07);
-}
-
-.nav-item.active {
-    color: white;
-
-    background: #2563eb;
-
-    box-shadow:
-        0 7px 18px
-        rgba(37, 99, 235, 0.22);
+.sidebar-nav::-webkit-scrollbar {
+    display: none;
 }
 
 
 /* ============================================================
-   BOTTOM
+   NAV SECTION
    ============================================================ */
 
-.sidebar-bottom {
-    margin-top: auto;
-
-    padding-top: 18px;
-
-    border-top:
-        1px solid
-        rgba(255, 255, 255, 0.08);
-
+.nav-section {
     display: flex;
 
     flex-direction: column;
 
-    gap: 5px;
+    gap: 4px;
 }
 
-.bottom-item {
-    width: 100%;
+.nav-section-title {
+    padding:
+        0
+        12px
+        7px;
+
+    color: #647695;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.2px;
+}
+
+
+/* ============================================================
+   NAV ITEM
+   ============================================================ */
+
+.nav-item {
+    min-height: 42px;
 
     display: flex;
 
@@ -168,7 +194,172 @@
 
     gap: 12px;
 
-    padding: 11px 13px;
+    padding:
+        0
+        12px;
+
+    border-radius: 9px;
+
+    color: #aebbd0;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
+
+    box-sizing: border-box;
+}
+
+.nav-item svg {
+    flex-shrink: 0;
+}
+
+.nav-item:hover {
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, 0.06);
+
+    transform:
+        translateX(1px);
+}
+
+.nav-item.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #3475ed
+        );
+
+    box-shadow:
+        0 7px 18px
+        rgba(37, 99, 235, 0.20);
+}
+
+.nav-item.active svg {
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   DISABLED / COMING SOON
+   ============================================================ */
+
+.nav-item.disabled {
+    cursor: default;
+
+    color: #667793;
+
+    opacity: 0.72;
+}
+
+.nav-item.disabled:hover {
+    color: #667793;
+
+    background: transparent;
+
+    transform: none;
+}
+
+.coming-soon {
+    margin-left: auto;
+
+    font-size: 8px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+    color: #6e7e98;
+
+    padding:
+        3px
+        6px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    border-radius: 5px;
+}
+
+
+/* ============================================================
+   SIDEBAR BOTTOM
+   ============================================================ */
+
+.sidebar-bottom {
+    padding-top: 14px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+/* ============================================================
+   SYSTEM STATUS
+   ============================================================ */
+
+.system-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        8px
+        12px
+        12px;
+
+    color: #69d391;
+
+    font-size: 11px;
+
+    font-weight: 500;
+}
+
+.system-status svg {
+    color: #35c978;
+}
+
+
+/* ============================================================
+   BOTTOM BUTTONS
+   ============================================================ */
+
+.bottom-item {
+    width: 100%;
+
+    min-height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        0
+        12px;
 
     border: none;
 
@@ -176,25 +367,46 @@
 
     background: transparent;
 
-    color: #aebbd0;
+    color: #93a2bb;
 
     cursor: pointer;
 
     text-align: left;
 
-    font-size: 14px;
+    font-size: 13px;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease;
 }
 
 .bottom-item:hover {
-    color: white;
+    color: #ffffff;
 
     background:
-        rgba(255, 255, 255, 0.07);
+        rgba(255, 255, 255, 0.06);
 }
 
 
 /* ============================================================
-   MAIN
+   MAIN AREA
+   ============================================================ */
+
+.main-area {
+    flex: 1;
+
+    min-width: 0;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+/* ============================================================
+   MAIN CONTENT
    ============================================================ */
 
 .main-content {
@@ -202,7 +414,7 @@
 
     min-width: 0;
 
-    min-height: 100vh;
+    min-height: 0;
 
     overflow-x: hidden;
 
@@ -211,36 +423,685 @@
 
 
 /* ============================================================
-   RESPONSIVE
+   TOP NAVBAR
    ============================================================ */
 
-@media (max-width: 800px) {
+.top-navbar {
+    width: 100%;
+
+    min-height: 62px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        0 30px;
+
+    background: #ffffff;
+
+    border-bottom:
+        1px solid
+        #e7ebf1;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 20;
+}
+
+
+/* ============================================================
+   NAVBAR CONTEXT
+   ============================================================ */
+
+.navbar-context {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+}
+
+.navbar-context-icon {
+    width: 32px;
+
+    height: 32px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+}
+
+.navbar-context > div:last-child {
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.navbar-context strong {
+    color: #1e293b;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.navbar-context span {
+    margin-top: 1px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+/* ============================================================
+   NAVBAR ACTIONS
+   ============================================================ */
+
+.navbar-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 22px;
+}
+
+
+/* ============================================================
+   NAVBAR STATUS
+   ============================================================ */
+
+.navbar-system-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #475569;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.navbar-status-dot {
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #16a34a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(22, 163, 74, 0.10);
+}
+
+
+/* ============================================================
+   TIME
+   ============================================================ */
+
+.navbar-time {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+.navbar-time svg {
+    color: #94a3b8;
+}
+
+.navbar-time-divider {
+    color: #cbd5e1;
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 1000px) {
 
     .sidebar {
-        width: 72px;
-
-        padding: 20px 10px;
+        width: 220px;
     }
 
-    .brand {
-        justify-content: center;
+}
 
-        padding-left: 0;
-        padding-right: 0;
+
+/* ============================================================
+   MOBILE OVERLAY
+   ============================================================ */
+
+.mobile-overlay {
+    display: none;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 760px) {
+
+    .sidebar {
+        position: fixed;
+
+        top: 0;
+
+        left: 0;
+
+        width: 270px;
+
+        height: 100vh;
+
+        min-height: 100vh;
+
+        padding:
+            18px 14px;
+
+        transform:
+            translateX(-100%);
+
+        transition:
+            transform 0.25s ease;
+
+        box-shadow:
+            15px 0 40px
+            rgba(2, 12, 27, 0.20);
     }
 
-    .brand-text,
-    .nav-item span,
-    .bottom-item span {
+
+    /*
+       When Layout adds this class,
+       the sidebar becomes visible.
+    */
+
+    .sidebar.mobile-open {
+        transform:
+            translateX(0);
+    }
+
+
+    .mobile-overlay {
+        position: fixed;
+
+        inset: 0;
+
+        z-index: 90;
+
+        display: block;
+
+        background:
+            rgba(3, 12, 27, 0.45);
+
+        backdrop-filter:
+            blur(2px);
+    }
+
+
+    .main-area {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+
+    .top-navbar {
+        min-height: 58px;
+
+        padding:
+            0 16px;
+
+        z-index: 80;
+    }
+
+
+    .navbar-context strong {
+        font-size: 11px;
+    }
+
+
+    .navbar-context span {
         display: none;
     }
 
-    .brand-icon {
-        width: 40px;
+
+    .navbar-actions {
+        gap: 12px;
     }
 
-    .nav-item,
-    .bottom-item {
-        justify-content: center;
+
+    .navbar-system-status span:last-child {
+        display: none;
     }
+
+
+    /*
+       Restore full sidebar content on mobile.
+       It is now a slide-out menu rather than
+       the old 72px collapsed sidebar.
+    */
+
+    .brand {
+        justify-content: flex-start;
+
+        padding:
+            2px
+            9px
+            20px;
+    }
+
+
+    .brand-text {
+        display: flex;
+    }
+
+
+    .nav-section-title {
+        display: block;
+    }
+
+
+    .nav-item {
+        justify-content: flex-start;
+
+        padding:
+            0
+            12px;
+    }
+
+
+    .nav-item span {
+        display: inline;
+    }
+
+
+    .coming-soon {
+        display: inline;
+    }
+
+
+    .system-status {
+        justify-content: flex-start;
+
+        padding:
+            8px
+            12px
+            10px;
+    }
+
+
+    .system-status span {
+        display: inline;
+    }
+
+
+    .bottom-item {
+        justify-content: flex-start;
+
+        padding:
+            0
+            12px;
+    }
+
+
+    .bottom-item span {
+        display: inline;
+    }
+
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 500px) {
+
+    .top-navbar {
+        min-height: 56px;
+
+        padding:
+            0 13px;
+    }
+
+
+    .navbar-context-icon {
+        width: 30px;
+
+        height: 30px;
+    }
+
+
+    .navbar-context strong {
+        font-size: 10px;
+    }
+
+
+    .navbar-time {
+        font-size: 9px;
+    }
+
+
+    .navbar-time span:not(:last-child) {
+        display: none;
+    }
+
+
+    .navbar-time-divider {
+        display: none;
+    }
+
+}
+
+
+/* ============================================================
+   REUSABLE LOADING STATE
+   ============================================================ */
+
+.loading-state {
+    min-height: 280px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+.loading-icon {
+    width: 46px;
+
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #dbeafe;
+
+    border-radius: 12px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+}
+
+.loading-spin {
+    animation:
+        loading-rotation
+        0.9s
+        linear
+        infinite;
+}
+
+.loading-content {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 3px;
+}
+
+.loading-content strong {
+    color: #334155;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.loading-content span {
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+@keyframes loading-rotation {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+/* ============================================================
+   MOBILE MENU BUTTON
+   ============================================================ */
+
+.mobile-menu-button {
+    display: none;
+
+    position: fixed;
+
+    top: 13px;
+
+    left: 14px;
+
+    z-index: 200;
+
+    width: 34px;
+
+    height: 34px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #334155;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 10px
+        rgba(15, 23, 42, 0.08);
+}
+
+.mobile-menu-button:hover {
+    background: #f8fafc;
+
+    color: #2563eb;
+}
+
+
+/* ============================================================
+   MOBILE SIDEBAR CLOSE BUTTON
+   ============================================================ */
+
+.mobile-sidebar-close {
+    display: none;
+
+    margin-left: auto;
+
+    width: 32px;
+
+    height: 32px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, 0.06);
+
+    color: #aebbd0;
+
+    cursor: pointer;
+}
+
+.mobile-sidebar-close:hover {
+    background:
+        rgba(255, 255, 255, 0.12);
+
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   MOBILE NAVIGATION
+   ============================================================ */
+
+@media (max-width: 760px) {
+
+    .mobile-menu-button {
+        display: flex;
+    }
+
+
+    .mobile-sidebar-close {
+        display: flex;
+    }
+
+
+    /*
+       Give the navbar room for the hamburger button.
+    */
+
+    .top-navbar {
+        padding-left: 60px;
+    }
+
+
+    /*
+       Overlay sits behind sidebar.
+    */
+
+    .mobile-overlay {
+        cursor: pointer;
+    }
+
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+   ============================================================ */
+
+@media (max-width: 500px) {
+
+    .mobile-menu-button {
+        top: 11px;
+
+        left: 10px;
+
+        width: 34px;
+
+        height: 34px;
+    }
+
+
+    .top-navbar {
+        padding-left: 54px;
+    }
+
+}
+
+/* ============================================================
+   LIVE SYSTEM STATUS
+   ============================================================ */
+
+.navbar-system-status.checking {
+    color: #b45309;
+}
+
+.navbar-system-status.checking
+.navbar-status-dot {
+    background: #f59e0b;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(245, 158, 11, 0.10);
+}
+
+
+.navbar-system-status.online {
+    color: #15803d;
+}
+
+.navbar-system-status.online
+.navbar-status-dot {
+    background: #16a34a;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(22, 163, 74, 0.10);
+}
+
+
+.navbar-system-status.offline {
+    color: #b91c1c;
+}
+
+.navbar-system-status.offline
+.navbar-status-dot {
+    background: #dc2626;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(220, 38, 38, 0.10);
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
     getForecastHistory,
@@ -16,6 +16,9 @@ import {
     Layers3,
     Loader2,
     AlertCircle,
+    RefreshCw,
+    Search,
+    TrendingUp,
 } from "lucide-react";
 
 import "./History.css";
@@ -23,53 +26,91 @@ import "./History.css";
 
 function History() {
 
-    const [history, setHistory] =
-        useState([]);
+    // ============================================================
+    // DATA
+    // ============================================================
+
+    const [history, setHistory] = useState([]);
 
     const [selectedForecast, setSelectedForecast] =
         useState(null);
 
-    const [loading, setLoading] =
-        useState(true);
+
+    // ============================================================
+    // UI STATES
+    // ============================================================
+
+    const [loading, setLoading] = useState(true);
+
+    const [refreshing, setRefreshing] =
+        useState(false);
 
     const [loadingDetails, setLoadingDetails] =
         useState(false);
 
-    const [error, setError] =
-        useState("");
+    const [error, setError] = useState("");
 
     const [deletingId, setDeletingId] =
         useState(null);
 
 
-    // ========================================================
-    // LOAD HISTORY
-    // ========================================================
+    // ============================================================
+    // FILTERS
+    // ============================================================
 
-    const loadHistory = async () => {
+    const [searchTerm, setSearchTerm] =
+        useState("");
+
+    const [typeFilter, setTypeFilter] =
+        useState("all");
+
+    const [horizonFilter, setHorizonFilter] =
+        useState("all");
+
+
+    // ============================================================
+    // LOAD HISTORY
+    // ============================================================
+
+    const loadHistory = async (
+        showRefreshing = false
+    ) => {
 
         try {
 
-            setLoading(true);
+            if (showRefreshing) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
 
             setError("");
 
             const response =
                 await getForecastHistory();
 
-            setHistory(
+            const records =
                 response.forecasts ||
                 response.history ||
-                []
+                [];
+
+            setHistory(
+                Array.isArray(records)
+                    ? records
+                    : []
             );
 
         }
 
         catch (err) {
 
-            console.error(err);
+            console.error(
+                "History error:",
+                err
+            );
 
             setError(
+                err?.response?.data?.error ||
                 "Unable to load forecast history."
             );
 
@@ -78,11 +119,16 @@ function History() {
         finally {
 
             setLoading(false);
+            setRefreshing(false);
 
         }
 
     };
 
+
+    // ============================================================
+    // INITIAL LOAD
+    // ============================================================
 
     useEffect(() => {
 
@@ -91,13 +137,11 @@ function History() {
     }, []);
 
 
-    // ========================================================
+    // ============================================================
     // VIEW FORECAST
-    // ========================================================
+    // ============================================================
 
-    const handleView = async (
-        id
-    ) => {
+    const handleView = async (id) => {
 
         try {
 
@@ -117,9 +161,13 @@ function History() {
 
         catch (err) {
 
-            console.error(err);
+            console.error(
+                "Forecast details error:",
+                err
+            );
 
             setError(
+                err?.response?.data?.error ||
                 "Unable to load forecast details."
             );
 
@@ -134,13 +182,11 @@ function History() {
     };
 
 
-    // ========================================================
+    // ============================================================
     // DELETE FORECAST
-    // ========================================================
+    // ============================================================
 
-    const handleDelete = async (
-        id
-    ) => {
+    const handleDelete = async (id) => {
 
         const confirmed =
             window.confirm(
@@ -149,9 +195,7 @@ function History() {
 
 
         if (!confirmed) {
-
             return;
-
         }
 
 
@@ -163,6 +207,7 @@ function History() {
 
             await deleteForecast(id);
 
+
             setHistory(
                 (current) =>
                     current.filter(
@@ -171,13 +216,26 @@ function History() {
                     )
             );
 
+
+            if (
+                selectedForecast?.id === id
+            ) {
+
+                setSelectedForecast(null);
+
+            }
+
         }
 
         catch (err) {
 
-            console.error(err);
+            console.error(
+                "Delete history error:",
+                err
+            );
 
             setError(
+                err?.response?.data?.error ||
                 "Unable to delete forecast."
             );
 
@@ -192,13 +250,11 @@ function History() {
     };
 
 
-    // ========================================================
+    // ============================================================
     // FORMAT CURRENCY
-    // ========================================================
+    // ============================================================
 
-    const formatCurrency = (
-        value
-    ) => {
+    const formatCurrency = (value) => {
 
         return `₹${Number(
             value || 0
@@ -212,13 +268,11 @@ function History() {
     };
 
 
-    // ========================================================
+    // ============================================================
     // FORMAT FORECAST TYPE
-    // ========================================================
+    // ============================================================
 
-    const formatForecastType = (
-        type
-    ) => {
+    const formatForecastType = (type) => {
 
         if (
             type ===
@@ -255,9 +309,112 @@ function History() {
     };
 
 
-    // ========================================================
+    // ============================================================
+    // TYPE CLASS
+    // ============================================================
+
+    const getTypeClass = (type) => {
+
+        if (
+            type ===
+            "historical_ml"
+        ) {
+
+            return "historical";
+
+        }
+
+        return "cold-start";
+
+    };
+
+
+    // ============================================================
+    // FILTER HISTORY
+    // ============================================================
+
+    const filteredHistory = useMemo(() => {
+
+        const query =
+            searchTerm
+                .trim()
+                .toLowerCase();
+
+
+        return history.filter(
+            (item) => {
+
+                const matchesSearch =
+                    !query ||
+                    String(
+                        item.store_name || ""
+                    )
+                        .toLowerCase()
+                        .includes(query) ||
+
+                    String(
+                        item.department_name || ""
+                    )
+                        .toLowerCase()
+                        .includes(query) ||
+
+                    String(
+                        item.store_id || ""
+                    )
+                        .toLowerCase()
+                        .includes(query) ||
+
+                    String(
+                        item.department_id || ""
+                    )
+                        .toLowerCase()
+                        .includes(query);
+
+
+                const matchesType =
+                    typeFilter === "all" ||
+                    item.forecast_type ===
+                        typeFilter;
+
+                const matchesHorizon =
+                    horizonFilter === "all" ||
+                    Number(item.horizon) ===
+                        Number(horizonFilter);
+
+
+                return (
+                    matchesSearch &&
+                    matchesType &&
+                    matchesHorizon
+                );
+
+            }
+        );
+
+    }, [
+        history,
+        searchTerm,
+        typeFilter,
+        horizonFilter,
+    ]);
+
+
+    // ============================================================
+    // CLEAR FILTERS
+    // ============================================================
+
+    const clearFilters = () => {
+
+        setSearchTerm("");
+        setTypeFilter("all");
+        setHorizonFilter("all");
+
+    };
+
+
+    // ============================================================
     // LOADING
-    // ========================================================
+    // ============================================================
 
     if (loading) {
 
@@ -279,13 +436,18 @@ function History() {
     }
 
 
+    // ============================================================
+    // PAGE
+    // ============================================================
+
     return (
 
         <div className="history-page">
 
-            {/* ================================================= */}
-            {/* HEADER */}
-            {/* ================================================= */}
+
+            {/* ====================================================
+                HEADER
+            ==================================================== */}
 
             <div className="history-header">
 
@@ -300,28 +462,56 @@ function History() {
                     </h1>
 
                     <p>
-                        Review forecasts generated
-                        by the forecasting system.
+                        Review and manage forecasts
+                        generated by the system.
                     </p>
 
                 </div>
 
-                <div className="history-count">
 
-                    <HistoryIcon
-                        size={17}
-                    />
+                <div className="history-header-actions">
 
-                    {history.length} Records
+                    <div className="history-count">
+
+                        <HistoryIcon
+                            size={17}
+                        />
+
+                        {history.length} Records
+
+                    </div>
+
+
+                    <button
+                        className="history-refresh"
+                        onClick={() =>
+                            loadHistory(true)
+                        }
+                        disabled={refreshing}
+                        title="Refresh history"
+                    >
+
+                        <RefreshCw
+                            size={15}
+                            className={
+                                refreshing
+                                    ? "spin"
+                                    : ""
+                            }
+                        />
+
+                        Refresh
+
+                    </button>
 
                 </div>
 
             </div>
 
 
-            {/* ================================================= */}
-            {/* ERROR */}
-            {/* ================================================= */}
+            {/* ====================================================
+                ERROR
+            ==================================================== */}
 
             {error && (
 
@@ -331,16 +521,148 @@ function History() {
                         size={18}
                     />
 
-                    {error}
+                    <span>
+                        {error}
+                    </span>
 
                 </div>
 
             )}
 
 
-            {/* ================================================= */}
-            {/* EMPTY STATE */}
-            {/* ================================================= */}
+            {/* ====================================================
+                FILTER BAR
+            ==================================================== */}
+
+            {history.length > 0 && (
+
+                <div className="history-toolbar">
+
+
+                    {/* SEARCH */}
+
+                    <div className="history-search">
+
+                        <Search
+                            size={16}
+                        />
+
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(event) =>
+                                setSearchTerm(
+                                    event.target.value
+                                )
+                            }
+                            placeholder="Search store or department..."
+                        />
+
+                    </div>
+
+
+                    {/* TYPE */}
+
+                    <select
+                        className="history-filter"
+                        value={typeFilter}
+                        onChange={(event) =>
+                            setTypeFilter(
+                                event.target.value
+                            )
+                        }
+                    >
+
+                        <option value="all">
+                            All Forecasts
+                        </option>
+
+                        <option value="historical_ml">
+                            Historical ML
+                        </option>
+
+                        <option value="cold_start_new_store">
+                            New Store
+                        </option>
+
+                        <option value="cold_start_new_department">
+                            New Department
+                        </option>
+
+                    </select>
+
+
+                    {/* HORIZON */}
+
+                    <select
+                        className="history-filter"
+                        value={horizonFilter}
+                        onChange={(event) =>
+                            setHorizonFilter(
+                                event.target.value
+                            )
+                        }
+                    >
+
+                        <option value="all">
+                            All Horizons
+                        </option>
+
+                        <option value="1">
+                            1 Week
+                        </option>
+
+                        <option value="4">
+                            4 Weeks
+                        </option>
+
+                        <option value="8">
+                            8 Weeks
+                        </option>
+
+                        <option value="12">
+                            12 Weeks
+                        </option>
+
+                    </select>
+
+
+                    {(searchTerm ||
+                        typeFilter !== "all" ||
+                        horizonFilter !== "all") && (
+
+                        <button
+                            type="button"
+                            className="history-clear-filters"
+                            onClick={clearFilters}
+                        >
+                            Clear
+                        </button>
+
+                    )}
+
+
+                    <div className="history-filter-count">
+
+                        Showing{" "}
+                        <strong>
+                            {filteredHistory.length}
+                        </strong>{" "}
+                        of{" "}
+                        <strong>
+                            {history.length}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            )}
+
+
+            {/* ====================================================
+                EMPTY STATE
+            ==================================================== */}
 
             {history.length === 0 && !error && (
 
@@ -368,11 +690,42 @@ function History() {
             )}
 
 
-            {/* ================================================= */}
-            {/* HISTORY TABLE */}
-            {/* ================================================= */}
+            {/* ====================================================
+                NO FILTER RESULTS
+            ==================================================== */}
 
-            {history.length > 0 && (
+            {history.length > 0 &&
+                filteredHistory.length === 0 && (
+
+                <div className="empty-history">
+
+                    <div className="empty-icon">
+
+                        <Search
+                            size={25}
+                        />
+
+                    </div>
+
+                    <h2>
+                        No Matching Forecasts
+                    </h2>
+
+                    <p>
+                        Try changing your search,
+                        forecast type, or horizon filter.
+                    </p>
+
+                </div>
+
+            )}
+
+
+            {/* ====================================================
+                HISTORY TABLE
+            ==================================================== */}
+
+            {filteredHistory.length > 0 && (
 
                 <section className="history-card">
 
@@ -419,238 +772,248 @@ function History() {
 
                             <tbody>
 
-                                {history.map(
+                                {filteredHistory.map(
                                     (item) => (
 
-                                        <tr
-                                            key={
-                                                item.id
-                                            }
-                                        >
-
-                                            {/* STORE */}
-
-                                            <td>
-
-                                                <div className="entity-cell">
-
-                                                    <div className="entity-icon">
-
-                                                        <Store
-                                                            size={15}
-                                                        />
-
-                                                    </div>
-
-                                                    <div>
-
-                                                        <strong>
-                                                            {
-                                                                item.store_name
-                                                            }
-                                                        </strong>
-
-                                                        <span>
-                                                            {
-                                                                item.store_id
-                                                            }
-                                                        </span>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </td>
+                                    <tr
+                                        key={
+                                            item.id
+                                        }
+                                    >
 
 
-                                            {/* DEPARTMENT */}
+                                        {/* STORE */}
 
-                                            <td>
+                                        <td>
 
-                                                <div className="entity-cell">
+                                            <div className="entity-cell">
 
-                                                    <div className="entity-icon">
+                                                <div className="entity-icon">
 
-                                                        <Layers3
-                                                            size={15}
-                                                        />
-
-                                                    </div>
-
-                                                    <div>
-
-                                                        <strong>
-                                                            {
-                                                                item.department_name
-                                                            }
-                                                        </strong>
-
-                                                        <span>
-                                                            {
-                                                                item.department_id
-                                                            }
-                                                        </span>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </td>
-
-
-                                            {/* TYPE */}
-
-                                            <td>
-
-                                                <span
-                                                    className={
-                                                        `type-badge ${
-                                                            item.forecast_type ===
-                                                            "historical_ml"
-                                                                ? "historical"
-                                                                : "cold-start"
-                                                        }`
-                                                    }
-                                                >
-
-                                                    {
-                                                        formatForecastType(
-                                                            item.forecast_type
-                                                        )
-                                                    }
-
-                                                </span>
-
-                                            </td>
-
-
-                                            {/* HORIZON */}
-
-                                            <td>
-
-                                                <span className="horizon-cell">
-
-                                                    <CalendarDays
-                                                        size={14}
+                                                    <Store
+                                                        size={15}
                                                     />
 
-                                                    {
-                                                        item.horizon
-                                                    }{" "}
-                                                    weeks
+                                                </div>
 
-                                                </span>
+                                                <div>
 
-                                            </td>
+                                                    <strong>
+                                                        {
+                                                            item.store_name ||
+                                                            "Unknown Store"
+                                                        }
+                                                    </strong>
+
+                                                    <span>
+                                                        {
+                                                            item.store_id ||
+                                                            "—"
+                                                        }
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
 
 
-                                            {/* SALES */}
+                                        {/* DEPARTMENT */}
 
-                                            <td>
+                                        <td>
 
-                                                <strong className="history-sales">
+                                            <div className="entity-cell">
 
-                                                    {
-                                                        formatCurrency(
-                                                            item.total_expected_sales
+                                                <div className="entity-icon">
+
+                                                    <Layers3
+                                                        size={15}
+                                                    />
+
+                                                </div>
+
+                                                <div>
+
+                                                    <strong>
+                                                        {
+                                                            item.department_name ||
+                                                            "Unknown Department"
+                                                        }
+                                                    </strong>
+
+                                                    <span>
+                                                        {
+                                                            item.department_id ||
+                                                            "—"
+                                                        }
+                                                    </span>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+
+                                        {/* TYPE */}
+
+                                        <td>
+
+                                            <span
+                                                className={
+                                                    `type-badge ${
+                                                        getTypeClass(
+                                                            item.forecast_type
+                                                        )
+                                                    }`
+                                                }
+                                            >
+
+                                                {
+                                                    formatForecastType(
+                                                        item.forecast_type
+                                                    )
+                                                }
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* HORIZON */}
+
+                                        <td>
+
+                                            <span className="horizon-cell">
+
+                                                <CalendarDays
+                                                    size={14}
+                                                />
+
+                                                {
+                                                    item.horizon ||
+                                                    0
+                                                }{" "}
+                                                weeks
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* SALES */}
+
+                                        <td>
+
+                                            <strong className="history-sales">
+
+                                                {
+                                                    formatCurrency(
+                                                        item.total_expected_sales
+                                                    )
+                                                }
+
+                                            </strong>
+
+                                        </td>
+
+
+                                        {/* DATE */}
+
+                                        <td>
+
+                                            <span className="created-date">
+
+                                                {
+                                                    item.created_at
+                                                        ? new Date(
+                                                            item.created_at
+                                                        ).toLocaleString(
+                                                            "en-IN",
+                                                            {
+                                                                dateStyle:
+                                                                    "medium",
+
+                                                                timeStyle:
+                                                                    "short",
+                                                            }
+                                                        )
+                                                        : "—"
+                                                }
+
+                                            </span>
+
+                                        </td>
+
+
+                                        {/* ACTIONS */}
+
+                                        <td>
+
+                                            <div className="history-actions">
+
+
+                                                {/* VIEW */}
+
+                                                <button
+                                                    className="view-button"
+                                                    onClick={() =>
+                                                        handleView(
+                                                            item.id
                                                         )
                                                     }
+                                                    title="View forecast"
+                                                >
 
-                                                </strong>
+                                                    <Eye
+                                                        size={16}
+                                                    />
 
-                                            </td>
+                                                </button>
 
 
-                                            {/* DATE */}
+                                                {/* DELETE */}
 
-                                            <td>
-
-                                                <span className="created-date">
-
-                                                    {
-                                                        item.created_at
-                                                            ? new Date(
-                                                                item.created_at
-                                                            ).toLocaleString(
-                                                                "en-IN",
-                                                                {
-                                                                    dateStyle:
-                                                                        "medium",
-                                                                    timeStyle:
-                                                                        "short",
-                                                                }
-                                                            )
-                                                            : "—"
+                                                <button
+                                                    className="delete-button"
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            item.id
+                                                        )
                                                     }
+                                                    disabled={
+                                                        deletingId ===
+                                                        item.id
+                                                    }
+                                                    title="Delete forecast"
+                                                >
 
-                                                </span>
+                                                    {deletingId ===
+                                                    item.id ? (
 
-                                            </td>
+                                                        <Loader2
+                                                            size={16}
+                                                            className="spin"
+                                                        />
 
+                                                    ) : (
 
-                                            {/* ACTIONS */}
-
-                                            <td>
-
-                                                <div className="history-actions">
-
-                                                    <button
-                                                        className="view-button"
-                                                        onClick={() =>
-                                                            handleView(
-                                                                item.id
-                                                            )
-                                                        }
-                                                        title="View forecast"
-                                                    >
-
-                                                        <Eye
+                                                        <Trash2
                                                             size={16}
                                                         />
 
-                                                    </button>
+                                                    )}
 
+                                                </button>
 
-                                                    <button
-                                                        className="delete-button"
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                item.id
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            deletingId ===
-                                                            item.id
-                                                        }
-                                                        title="Delete forecast"
-                                                    >
+                                            </div>
 
-                                                        {deletingId ===
-                                                        item.id ? (
+                                        </td>
 
-                                                            <Loader2
-                                                                size={16}
-                                                                className="spin"
-                                                            />
+                                    </tr>
 
-                                                        ) : (
-
-                                                            <Trash2
-                                                                size={16}
-                                                            />
-
-                                                        )}
-
-                                                    </button>
-
-                                                </div>
-
-                                            </td>
-
-                                        </tr>
-
-                                    )
-                                )}
+                                ))}
 
                             </tbody>
 
@@ -663,9 +1026,9 @@ function History() {
             )}
 
 
-            {/* ================================================= */}
-            {/* DETAILS MODAL */}
-            {/* ================================================= */}
+            {/* ====================================================
+                DETAILS MODAL
+            ==================================================== */}
 
             {selectedForecast && (
 
@@ -685,6 +1048,9 @@ function History() {
                         }
                     >
 
+
+                        {/* MODAL HEADER */}
+
                         <div className="modal-header">
 
                             <div>
@@ -694,13 +1060,19 @@ function History() {
                                 </p>
 
                                 <h2>
+
                                     {
-                                        selectedForecast.store_name
+                                        selectedForecast.store_name ||
+                                        "Store"
                                     }
+
                                     {" — "}
+
                                     {
-                                        selectedForecast.department_name
+                                        selectedForecast.department_name ||
+                                        "Department"
                                     }
+
                                 </h2>
 
                             </div>
@@ -713,6 +1085,7 @@ function History() {
                                         null
                                     )
                                 }
+                                title="Close"
                             >
 
                                 <X
@@ -724,7 +1097,10 @@ function History() {
                         </div>
 
 
+                        {/* MODAL SUMMARY */}
+
                         <div className="modal-summary">
+
 
                             <div>
 
@@ -779,6 +1155,63 @@ function History() {
                         </div>
 
 
+                        {/* MODAL EXTRA INFO */}
+
+                        <div className="modal-context">
+
+                            <div>
+
+                                <Store
+                                    size={15}
+                                />
+
+                                <span>
+                                    {
+                                        selectedForecast.store_name ||
+                                        "Store"
+                                    }
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <Layers3
+                                    size={15}
+                                />
+
+                                <span>
+                                    {
+                                        selectedForecast.department_name ||
+                                        "Department"
+                                    }
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                <CalendarDays
+                                    size={15}
+                                />
+
+                                <span>
+                                    {
+                                        selectedForecast.horizon ||
+                                        0
+                                    }{" "}
+                                    weeks
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* FORECAST TABLE */}
+
                         <div className="modal-table">
 
                             <table>
@@ -806,8 +1239,9 @@ function History() {
 
                                 <tbody>
 
-                                    {selectedForecast.forecast?.map(
-                                        (item) => (
+                                    {
+                                        selectedForecast.forecast?.map(
+                                            (item) => (
 
                                             <tr
                                                 key={
@@ -817,36 +1251,45 @@ function History() {
                                             >
 
                                                 <td>
+
                                                     Week{" "}
                                                     {
                                                         item.week_number
                                                     }
+
                                                 </td>
 
+
                                                 <td>
+
                                                     {
                                                         item.forecast_date ||
-                                                        item.date
+                                                        item.date ||
+                                                        "—"
                                                     }
+
                                                 </td>
+
 
                                                 <td>
 
                                                     <strong>
+
                                                         {
                                                             formatCurrency(
                                                                 item.forecast_value ??
                                                                 item.forecast
                                                             )
                                                         }
+
                                                     </strong>
 
                                                 </td>
 
                                             </tr>
 
-                                        )
-                                    )}
+                                        ))
+                                    }
 
                                 </tbody>
 
@@ -861,9 +1304,9 @@ function History() {
             )}
 
 
-            {/* ================================================= */}
-            {/* DETAILS LOADING */}
-            {/* ================================================= */}
+            {/* ====================================================
+                DETAILS LOADING
+            ==================================================== */}
 
             {loadingDetails && (
 
@@ -883,6 +1326,7 @@ function History() {
         </div>
 
     );
+
 }
 
 

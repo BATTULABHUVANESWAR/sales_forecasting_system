@@ -676,3 +676,460 @@
     }
 
 }
+
+/* ============================================================
+   FORECAST CHART COMPONENT
+   ============================================================ */
+
+.forecast-chart {
+    width: 100%;
+    min-width: 0;
+}
+
+
+.forecast-chart-empty {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+/* ============================================================
+   PROFESSIONAL HORIZON OPTIONS
+   ============================================================ */
+
+.horizon-options {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+
+    width: 100%;
+}
+
+.horizon-option {
+    min-height: 62px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    border:
+        1px solid
+        #e2e8f0;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #64748b;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.horizon-option strong {
+    color: #1e293b;
+
+    font-size: 16px;
+
+    line-height: 1;
+}
+
+.horizon-option span {
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+.horizon-option:hover {
+    border-color: #93c5fd;
+
+    background: #f8fbff;
+
+    transform: translateY(-1px);
+}
+
+.horizon-option.selected {
+    border-color: #2563eb;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    box-shadow:
+        0 4px 12px
+        rgba(37, 99, 235, 0.10);
+}
+
+.horizon-option.selected strong {
+    color: #2563eb;
+}
+
+.horizon-option.selected span {
+    color: #3b82f6;
+}
+
+
+/* ============================================================
+   PROFESSIONAL RESULT HEADER
+   ============================================================ */
+
+.result-context {
+    margin: 6px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   PROFESSIONAL RESULT KPIs
+   ============================================================ */
+
+.result-kpis {
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.result-kpi {
+    position: relative;
+
+    min-width: 0;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border:
+        1px solid
+        #e5eaf1;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 3px 12px
+        rgba(15, 23, 42, 0.035);
+
+    overflow: hidden;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.result-kpi:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 22px
+        rgba(15, 23, 42, 0.07);
+}
+
+.result-kpi::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 3px;
+
+    background: #2563eb;
+}
+
+.result-kpi span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.result-kpi strong {
+    display: block;
+
+    color: #111827;
+
+    font-size: 20px;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+
+    letter-spacing: -0.3px;
+}
+
+.result-kpi small {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.result-kpi:first-child strong {
+    font-size: 23px;
+}
+
+.result-kpi:nth-child(3)::before {
+    background: #16a34a;
+}
+
+.result-kpi:nth-child(4)::before {
+    background: #f59e0b;
+}
+
+
+/* ============================================================
+   PROFESSIONAL CHART CARD
+   ============================================================ */
+
+.chart-card {
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 14px
+        rgba(15, 23, 42, 0.035);
+}
+
+.forecast-chart-wrapper {
+    width: 100%;
+
+    min-height: 350px;
+
+    padding-top: 5px;
+}
+
+
+/* ============================================================
+   PROFESSIONAL FORECAST TABLE
+   ============================================================ */
+
+.forecast-table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+.forecast-table-wrapper th {
+    padding:
+        13px 16px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    text-align: left;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+.forecast-table-wrapper td {
+    padding:
+        14px 16px;
+
+    border-top:
+        1px solid
+        #edf0f4;
+
+    border-bottom: none;
+
+    color: #475569;
+
+    font-size: 12px;
+}
+
+.forecast-table-wrapper tbody tr {
+    transition:
+        background 0.15s ease;
+}
+
+.forecast-table-wrapper tbody tr:hover {
+    background: #f8fafc;
+}
+
+.forecast-table-wrapper .sales-value {
+    color: #172033 !important;
+
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* ============================================================
+   RESULT RESPONSIVE OVERRIDES
+   ============================================================ */
+
+@media (max-width: 1100px) {
+
+    .result-kpis {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .horizon-options {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .result-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .result-kpi:first-child strong {
+        font-size: 21px;
+    }
+
+    .forecast-chart-wrapper {
+        min-height: 300px;
+    }
+
+}
+
+
+/* ============================================================
+   FORECAST RESULT — PROFESSIONAL DIRECTION
+   ============================================================ */
+
+.result-context {
+    margin-top: 6px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.result-direction {
+    grid-column: 1 / -1;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #e5eaf1;
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 3px 12px
+        rgba(15, 23, 42, 0.03);
+}
+
+.direction-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+}
+
+.direction-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.direction-content > span {
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .45px;
+}
+
+.direction-content > strong {
+    color: #172033;
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+.direction-content > small {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.result-direction.positive {
+    background: #f8fffa;
+    border-color: #dcfce7;
+}
+
+.result-direction.positive .direction-icon {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.result-direction.negative {
+    background: #fffafa;
+    border-color: #ffe4e6;
+}
+
+.result-direction.negative .direction-icon {
+    background: #ffe4e6;
+    color: #e11d48;
+}
+
+.result-direction.neutral {
+    background: #fafbfc;
+}
+
+.result-direction.neutral .direction-icon {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+@media (max-width: 600px) {
+    .result-direction {
+        align-items: flex-start;
+    }
+}
