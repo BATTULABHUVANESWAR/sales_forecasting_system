@@ -76,3 +76,9 @@ Thumbs.db
 # Hugging Face
 *.joblib
 # *.csv
+
+# Raw training dataset - kept locally
+backend/data/raw/
+
+# Generated ML datasets - kept locally
+backend/data/processed/
