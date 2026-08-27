@@ -178,7 +178,7 @@ def load_historical_data():
     )
 
     print(
-        "Downloading ml_features.csv from Hugging Face:"
+        "Downloading forecasting_history.csv from Hugging Face:"
     )
 
     print(

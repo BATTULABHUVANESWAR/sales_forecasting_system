@@ -5,6 +5,8 @@ import numpy as np
 
 from pathlib import Path
 
+from huggingface_hub import hf_hub_download
+
 
 # ============================================================
 # FORECASTING ENGINE
@@ -58,10 +60,32 @@ MASTER_DATA = (
 )
 
 
-PROCESSED_DATA = (
+# ============================================================
+# HUGGING FACE RUNTIME DATA
+# ============================================================
+
+HF_REPO_ID = (
+    "Bhuvi18/business-sales-forecast-models"
+)
+
+HF_DATA_FILENAME = (
+    "forecasting_history.csv"
+)
+
+LOCAL_DATA_DIR = (
     PROJECT_ROOT
     / "data"
     / "processed"
+)
+
+LOCAL_DATA_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+LOCAL_DATA_PATH = (
+    LOCAL_DATA_DIR
+    / HF_DATA_FILENAME
 )
 
 
@@ -85,10 +109,76 @@ department_master = pd.read_csv(
 # LOAD HISTORICAL DATA
 # ============================================================
 
-history = pd.read_csv(
-    PROCESSED_DATA
-    / "ml_features.csv"
-)
+def load_historical_data():
+
+    # Use local cached data when available.
+    if LOCAL_DATA_PATH.exists():
+
+        print(
+            f"Loading forecasting history from local cache: "
+            f"{LOCAL_DATA_PATH}"
+        )
+
+        return pd.read_csv(
+            LOCAL_DATA_PATH,
+            dtype={
+                "Store": "int16",
+                "Dept": "int16",
+                "Weekly_Sales": "float32",
+                "Size": "int32",
+                "Type": "category",
+            },
+            parse_dates=["Date"],
+        )
+
+
+    print(
+        "Forecasting history not found locally."
+    )
+
+    print(
+        "Downloading forecasting_history.csv "
+        "from Hugging Face:"
+    )
+
+    print(
+        f"{HF_REPO_ID}/{HF_DATA_FILENAME}"
+    )
+
+
+    downloaded_path = hf_hub_download(
+
+        repo_id=
+            HF_REPO_ID,
+
+        filename=
+            HF_DATA_FILENAME,
+
+        local_dir=
+            LOCAL_DATA_DIR
+    )
+
+
+    print(
+        f"Forecasting history downloaded to: "
+        f"{downloaded_path}"
+    )
+
+
+    return pd.read_csv(
+        downloaded_path,
+        dtype={
+            "Store": "int16",
+            "Dept": "int16",
+            "Weekly_Sales": "float32",
+            "Size": "int32",
+            "Type": "category",
+        },
+        parse_dates=["Date"],
+    )
+
+
+history = load_historical_data()
 
 
 # ============================================================
