@@ -1,0 +1,82 @@
+department_id,source_department_id,department_name,department_category
+D001,1,Grocery,Food & Essentials
+D002,2,Fresh Produce,Food & Essentials
+D003,3,Bakery,Food & Essentials
+D004,4,Dairy,Food & Essentials
+D005,5,Beverages,Food & Essentials
+D006,6,Packaged Foods,Food & Essentials
+D007,7,Frozen Foods,Food & Essentials
+D008,8,Snacks,Food & Essentials
+D009,9,Breakfast Foods,Food & Essentials
+D010,10,Canned Foods,Food & Essentials
+D011,11,Condiments,Food & Essentials
+D012,12,Household Essentials,Food & Essentials
+D013,13,Mobile Devices,Consumer Electronics
+D014,14,Computing,Consumer Electronics
+D015,16,Television,Consumer Electronics
+D016,17,Audio,Consumer Electronics
+D017,18,Cameras,Consumer Electronics
+D018,19,Electronics Accessories,Consumer Electronics
+D019,20,Gaming,Consumer Electronics
+D020,21,Smart Home,Consumer Electronics
+D021,22,Wearable Technology,Consumer Electronics
+D022,23,Home Appliances,Home
+D023,24,Furniture,Home
+D024,25,Kitchen,Home
+D025,26,Cookware,Home
+D026,27,Home Decor,Home
+D027,28,Bedding,Home
+D028,29,Bath,Home
+D029,30,Storage,Home
+D030,31,Lighting,Home
+D031,32,Cleaning Supplies,Home
+D032,33,Men's Clothing,Fashion
+D033,34,Women's Clothing,Fashion
+D034,35,Kids' Clothing,Fashion
+D035,36,Footwear,Fashion
+D036,37,Sportswear,Fashion
+D037,38,Innerwear,Fashion
+D038,39,Fashion Accessories,Fashion
+D039,40,Jewelry,Fashion
+D040,41,Bags & Luggage,Fashion
+D041,42,Seasonal Fashion,Fashion
+D042,43,Skincare,Beauty & Personal Care
+D043,44,Haircare,Beauty & Personal Care
+D044,45,Cosmetics,Beauty & Personal Care
+D045,46,Fragrances,Beauty & Personal Care
+D046,47,Personal Hygiene,Beauty & Personal Care
+D047,48,Grooming,Beauty & Personal Care
+D048,49,Baby Care,Beauty & Personal Care
+D049,50,Fitness,Sports & Recreation
+D050,51,Outdoor Recreation,Sports & Recreation
+D051,52,Sports Equipment,Sports & Recreation
+D052,54,Cycling,Sports & Recreation
+D053,55,Toys,Sports & Recreation
+D054,56,Games & Hobbies,Sports & Recreation
+D055,58,Stationery,General Retail
+D056,59,Books,General Retail
+D057,60,Automotive,General Retail
+D058,65,Pet Care,General Retail
+D059,67,Garden,General Retail
+D060,71,Hardware,General Retail
+D061,72,Travel Accessories,General Retail
+D062,74,Gifts,General Retail
+D063,77,Seasonal Products,General Retail
+D064,78,Office Supplies,General Retail
+D065,79,School Supplies,General Retail
+D066,80,Home Improvement,General Retail
+D067,81,Tools,General Retail
+D068,82,Electrical Supplies,General Retail
+D069,83,Music & Media,General Retail
+D070,85,Party Supplies,General Retail
+D071,87,Craft Supplies,General Retail
+D072,90,Health & Wellness,Health & Wellness
+D073,91,Pharmacy,Health & Wellness
+D074,92,Vitamins & Supplements,Health & Wellness
+D075,93,Medical Accessories,Health & Wellness
+D076,94,Pet Food,Pet & Animal Care
+D077,95,Pet Accessories,Pet & Animal Care
+D078,96,Outdoor Living,Home & Garden
+D079,97,Garden Supplies,Home & Garden
+D080,98,Seasonal Garden,Home & Garden
+D081,99,Value Products,General Retail
