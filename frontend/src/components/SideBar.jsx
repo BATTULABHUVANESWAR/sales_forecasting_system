@@ -182,34 +182,6 @@ function SideBar() {
 
                 </div>
 
-
-                <button
-                    type="button"
-                    className="bottom-item"
-                >
-
-                    <Settings size={18} />
-
-                    <span>
-                        Settings
-                    </span>
-
-                </button>
-
-
-                <button
-                    type="button"
-                    className="bottom-item"
-                >
-
-                    <LogOut size={18} />
-
-                    <span>
-                        Logout
-                    </span>
-
-                </button>
-
             </div>
 
         </aside>
