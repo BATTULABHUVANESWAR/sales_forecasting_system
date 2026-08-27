@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 
-
+from huggingface_hub import hf_hub_download
 # ============================================================
 # PROJECT PATHS
 # ============================================================
@@ -15,24 +15,110 @@ PROJECT_ROOT = (
     .parent
 )
 
-DATA_PATH = (
+# ============================================================
+# HUGGING FACE RUNTIME DATA
+# ============================================================
+
+HF_REPO_ID = (
+    "Bhuvi18/business-sales-forecast-models"
+)
+
+HF_DATA_FILENAME = (
+    "forecasting_history.csv"
+)
+
+LOCAL_DATA_DIR = (
     PROJECT_ROOT
     / "backend"
     / "data"
     / "processed"
-    / "ml_features.csv"
+)
+
+LOCAL_DATA_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+LOCAL_DATA_PATH = (
+    LOCAL_DATA_DIR
+    / HF_DATA_FILENAME
 )
 
 
 # ============================================================
-# LOAD HISTORICAL DATA
+# LOAD HISTORICAL DATA FROM HUGGING FACE
 # ============================================================
 
-history = pd.read_csv(DATA_PATH)
+def load_historical_data():
 
-history["Date"] = pd.to_datetime(
-    history["Date"]
-)
+    # Use local cached copy if available.
+    if LOCAL_DATA_PATH.exists():
+
+        print(
+            f"Loading historical data from local cache: "
+            f"{LOCAL_DATA_PATH}"
+        )
+
+        return pd.read_csv(
+            LOCAL_DATA_PATH,
+            dtype={
+                "Store": "int16",
+                "Dept": "int16",
+                "Weekly_Sales": "float32",
+                "Size": "int32",
+                "Type": "category",
+            },
+            parse_dates=["Date"],
+        )
+
+
+    print(
+        "Historical data not found locally."
+    )
+
+    print(
+        "Downloading forecasting_history.csv "
+        "from Hugging Face:"
+    )
+
+    print(
+        f"{HF_REPO_ID}/{HF_DATA_FILENAME}"
+    )
+
+
+    downloaded_path = hf_hub_download(
+
+        repo_id=
+            HF_REPO_ID,
+
+        filename=
+            HF_DATA_FILENAME,
+
+        local_dir=
+            LOCAL_DATA_DIR
+    )
+
+
+    print(
+        f"Historical data downloaded to: "
+        f"{downloaded_path}"
+    )
+
+
+    return pd.read_csv(
+        downloaded_path,
+        dtype={
+            "Store": "int16",
+            "Dept": "int16",
+            "Weekly_Sales": "float32",
+            "Size": "int32",
+            "Type": "category",
+        },
+        parse_dates=["Date"],
+    )
+
+
+history = load_historical_data()
 
 
 # ============================================================
