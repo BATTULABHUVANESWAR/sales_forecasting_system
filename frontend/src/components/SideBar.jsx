@@ -1,69 +1,222 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, TrendingUp, History, BarChart3, BarChart2, Settings, LogOut, Circle } from "lucide-react";
+
+import {
+    LayoutDashboard,
+    TrendingUp,
+    History,
+    BarChart2,
+    Store,
+    Package,
+    Brain,
+    Settings,
+    LogOut,
+    Circle,
+} from "lucide-react";
+
 import "./Layout.css";
 
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
 function SideBar() {
+
     const getNavClass = ({ isActive }) =>
         `nav-item ${isActive ? "active" : ""}`;
 
+
     return (
+
         <aside className="sidebar">
+
+            {/* =================================================
+                BRAND
+            ================================================= */}
+
             <div className="brand">
-                <div className="brand-icon"><BarChart3 size={21} /></div>
+
+                <img src="/salespulse-icon-64.png"
+                     alt="SalesPulse"
+                     className="salespulse-logo-image"
+                 />
+
+
                 <div className="brand-text">
-                    <strong>Sales Forecast</strong>
-                    <span>Intelligence Platform</span>
+
+                    <strong>
+                        SalesPulse
+                    </strong>
+
+                    <span>
+                        Sales Forecasting & Intelligence
+                    </span>
+
                 </div>
+
             </div>
+
+
+            {/* =================================================
+                NAVIGATION
+            ================================================= */}
 
             <nav className="sidebar-nav">
+
+
+                {/* =================================================
+                    MAIN
+                ================================================= */}
+
                 <div className="nav-section">
-                    <div className="nav-section-title">MAIN</div>
-                    <NavLink to="/" end className={getNavClass}>
+
+                    <div className="nav-section-title">
+                        MAIN
+                    </div>
+
+
+                    <NavLink
+                        to="/"
+                        end
+                        className={getNavClass}
+                    >
+
                         <LayoutDashboard size={18} />
-                        <span>Dashboard</span>
+
+                        <span>
+                            Dashboard
+                        </span>
+
                     </NavLink>
+
                 </div>
 
+
+                {/* =================================================
+                    FORECASTING
+                ================================================= */}
+
                 <div className="nav-section">
-                    <div className="nav-section-title">FORECASTING</div>
-                    <NavLink to="/forecast" className={getNavClass}>
+
+                    <div className="nav-section-title">
+                        FORECASTING
+                    </div>
+
+
+                    <NavLink
+                        to="/forecast"
+                        className={getNavClass}
+                    >
+
                         <TrendingUp size={18} />
-                        <span>Generate Forecast</span>
+
+                        <span>
+                            Generate Forecast
+                        </span>
+
                     </NavLink>
-                    <NavLink to="/history" className={getNavClass}>
+
+
+                    <NavLink
+                        to="/history"
+                        className={getNavClass}
+                    >
+
                         <History size={18} />
-                        <span>Forecast History</span>
+
+                        <span>
+                            Forecast History
+                        </span>
+
                     </NavLink>
+
                 </div>
 
+
+                {/* =================================================
+                    ANALYTICS
+                ================================================= */}
+
                 <div className="nav-section">
-                    <div className="nav-section-title">ANALYTICS</div>
-                    <NavLink to="/analytics" className={getNavClass}>
+
+                    <div className="nav-section-title">
+                        ANALYTICS
+                    </div>
+
+
+                    <NavLink
+                        to="/analytics"
+                        className={getNavClass}
+                    >
+
                         <BarChart2 size={18} />
-                        <span>Analytics</span>
+
+                        <span>
+                            Analytics
+                        </span>
+
                     </NavLink>
+
                 </div>
+
             </nav>
 
+
+            {/* =================================================
+                BOTTOM
+            ================================================= */}
+
             <div className="sidebar-bottom">
+
+
                 <div className="system-status">
-                    <Circle size={8} fill="currentColor" />
-                    <span>System Online</span>
+
+                    <Circle
+                        size={8}
+                        fill="currentColor"
+                    />
+
+                    <span>
+                        System Online
+                    </span>
+
                 </div>
 
-                <button type="button" className="bottom-item">
+
+                <button
+                    type="button"
+                    className="bottom-item"
+                >
+
                     <Settings size={18} />
-                    <span>Settings</span>
+
+                    <span>
+                        Settings
+                    </span>
+
                 </button>
 
-                <button type="button" className="bottom-item">
+
+                <button
+                    type="button"
+                    className="bottom-item"
+                >
+
                     <LogOut size={18} />
-                    <span>Logout</span>
+
+                    <span>
+                        Logout
+                    </span>
+
                 </button>
+
             </div>
+
         </aside>
+
     );
+
 }
+
 
 export default SideBar;
