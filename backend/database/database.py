@@ -26,7 +26,6 @@ DATABASE_DIR.mkdir(
     exist_ok=True
 )
 
-
 DATABASE_PATH = (
     DATABASE_DIR
     / "forecast_history.db"
@@ -43,9 +42,7 @@ def get_connection():
         DATABASE_PATH
     )
 
-    connection.row_factory = (
-        sqlite3.Row
-    )
+    connection.row_factory = sqlite3.Row
 
     # Enable foreign keys
     connection.execute(
@@ -62,13 +59,11 @@ def get_connection():
 def initialize_database():
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
-
-    # ========================================================
-    # USERS TABLE
-    # ========================================================
+    # --------------------------------------------------------
+    # Users
+    # --------------------------------------------------------
 
     cursor.execute(
         """
@@ -88,10 +83,9 @@ def initialize_database():
         """
     )
 
-
-    # ========================================================
-    # FORECAST MASTER TABLE
-    # ========================================================
+    # --------------------------------------------------------
+    # Forecast master table
+    # --------------------------------------------------------
 
     cursor.execute(
         """
@@ -127,27 +121,19 @@ def initialize_database():
 
             created_at TEXT NOT NULL,
 
-            FOREIGN KEY (
-                user_id
-            )
-            REFERENCES users(id)
+            FOREIGN KEY (user_id)
+                REFERENCES users(id)
 
         )
         """
     )
 
-
-    # ========================================================
-    # DATABASE MIGRATION
-    # ========================================================
-    # If forecasts table already existed before authentication,
-    # add user_id without deleting existing forecast history.
-    # ========================================================
+    # --------------------------------------------------------
+    # Migration for old databases
+    # --------------------------------------------------------
 
     cursor.execute(
-        """
-        PRAGMA table_info(forecasts)
-        """
+        "PRAGMA table_info(forecasts)"
     )
 
     columns = [
@@ -155,21 +141,18 @@ def initialize_database():
         for row in cursor.fetchall()
     ]
 
-
     if "user_id" not in columns:
 
         cursor.execute(
             """
             ALTER TABLE forecasts
-
             ADD COLUMN user_id INTEGER
             """
         )
 
-
-    # ========================================================
-    # INDIVIDUAL FORECAST VALUES
-    # ========================================================
+    # --------------------------------------------------------
+    # Individual forecast values
+    # --------------------------------------------------------
 
     cursor.execute(
         """
@@ -185,19 +168,15 @@ def initialize_database():
 
             forecast_value REAL NOT NULL,
 
-            FOREIGN KEY (
-                forecast_id
-            )
-            REFERENCES forecasts(id)
-            ON DELETE CASCADE
+            FOREIGN KEY (forecast_id)
+                REFERENCES forecasts(id)
+                ON DELETE CASCADE
 
         )
         """
     )
 
-
     connection.commit()
-
     connection.close()
 
 
@@ -212,153 +191,100 @@ def create_user(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
-
-    created_at = (
-        datetime.now()
-        .isoformat()
-    )
-
 
     try:
 
         cursor.execute(
             """
             INSERT INTO users (
-
                 name,
                 email,
                 password_hash,
                 created_at
-
             )
 
             VALUES (?, ?, ?, ?)
             """,
-
             (
-                str(name).strip(),
-
-                str(email).strip().lower(),
-
+                str(name),
+                str(email),
                 str(password_hash),
-
-                created_at
+                datetime.now().isoformat()
             )
         )
 
+        user_id = cursor.lastrowid
 
         connection.commit()
 
-
-        user_id = (
-            cursor.lastrowid
-        )
-
-
-        connection.close()
-
-
         return user_id
-
 
     except sqlite3.IntegrityError:
 
-        connection.close()
+        connection.rollback()
 
         return None
+
+    finally:
+
+        connection.close()
 
 
 # ============================================================
 # GET USER BY EMAIL
 # ============================================================
 
-def get_user_by_email(
-    email
-):
+def get_user_by_email(email):
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute(
         """
         SELECT *
-
         FROM users
-
         WHERE email = ?
-
-        LIMIT 1
         """,
-
-        (
-            str(email).strip().lower(),
-        )
+        (str(email),)
     )
 
-
-    row = cursor.fetchone()
+    user = cursor.fetchone()
 
     connection.close()
 
-
-    if row is None:
-
+    if user is None:
         return None
 
-
-    return dict(row)
+    return dict(user)
 
 
 # ============================================================
 # GET USER BY ID
 # ============================================================
 
-def get_user_by_id(
-    user_id
-):
+def get_user_by_id(user_id):
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute(
         """
-        SELECT
-            id,
-            name,
-            email,
-            created_at
-
+        SELECT id, name, email, created_at
         FROM users
-
         WHERE id = ?
-
-        LIMIT 1
         """,
-
-        (
-            int(user_id),
-        )
+        (int(user_id),)
     )
 
-
-    row = cursor.fetchone()
+    user = cursor.fetchone()
 
     connection.close()
 
-
-    if row is None:
-
+    if user is None:
         return None
 
-
-    return dict(row)
+    return dict(user)
 
 
 # ============================================================
@@ -378,19 +304,13 @@ def save_forecast(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
+    created_at = datetime.now().isoformat()
 
-    created_at = (
-        datetime.now()
-        .isoformat()
-    )
-
-
-    # ========================================================
-    # INSERT MAIN FORECAST RECORD
-    # ========================================================
+    # --------------------------------------------------------
+    # Main forecast
+    # --------------------------------------------------------
 
     cursor.execute(
         """
@@ -405,11 +325,9 @@ def save_forecast(
             department_name,
 
             forecast_type,
-
             horizon,
 
             total_expected_sales,
-
             average_weekly_sales,
 
             peak_week,
@@ -423,76 +341,56 @@ def save_forecast(
         )
 
         VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?, ?
         )
         """,
 
         (
-
             int(user_id),
 
             str(store_id),
-
             str(store_name),
 
             str(department_id),
-
             str(department_name),
 
             str(forecast_type),
-
             int(horizon),
 
             float(
-                summary[
-                    "total_expected_sales"
-                ]
+                summary["total_expected_sales"]
             ),
 
             float(
-                summary[
-                    "average_weekly_sales"
-                ]
+                summary["average_weekly_sales"]
             ),
 
             int(
-                summary[
-                    "peak_week"
-                ]
+                summary["peak_week"]
             ),
 
             float(
-                summary[
-                    "peak_sales"
-                ]
+                summary["peak_sales"]
             ),
 
             int(
-                summary[
-                    "lowest_week"
-                ]
+                summary["lowest_week"]
             ),
 
             float(
-                summary[
-                    "lowest_sales"
-                ]
+                summary["lowest_sales"]
             ),
 
             created_at
-
         )
     )
 
+    forecast_id = cursor.lastrowid
 
-    forecast_id = (
-        cursor.lastrowid
-    )
-
-
-    # ========================================================
-    # INSERT INDIVIDUAL WEEKLY PREDICTIONS
-    # ========================================================
+    # --------------------------------------------------------
+    # Weekly forecast values
+    # --------------------------------------------------------
 
     for item in forecast_records:
 
@@ -501,11 +399,8 @@ def save_forecast(
             INSERT INTO forecast_values (
 
                 forecast_id,
-
                 week_number,
-
                 forecast_date,
-
                 forecast_value
 
             )
@@ -514,35 +409,24 @@ def save_forecast(
             """,
 
             (
-
                 forecast_id,
 
                 int(
-                    item[
-                        "week_number"
-                    ]
+                    item["week_number"]
                 ),
 
                 str(
-                    item[
-                        "date"
-                    ]
+                    item["date"]
                 ),
 
                 float(
-                    item[
-                        "forecast"
-                    ]
+                    item["forecast"]
                 )
-
             )
         )
 
-
     connection.commit()
-
     connection.close()
-
 
     return forecast_id
 
@@ -557,9 +441,7 @@ def get_forecast_history(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
 
     cursor.execute(
         """
@@ -575,19 +457,14 @@ def get_forecast_history(
         """,
 
         (
-
             int(user_id),
-
             int(limit)
-
         )
     )
-
 
     rows = cursor.fetchall()
 
     connection.close()
-
 
     return [
         dict(row)
@@ -596,7 +473,7 @@ def get_forecast_history(
 
 
 # ============================================================
-# GET SINGLE FORECAST
+# GET SINGLE USER FORECAST
 # ============================================================
 
 def get_forecast_by_id(
@@ -605,14 +482,7 @@ def get_forecast_by_id(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
-
-
-    # ========================================================
-    # IMPORTANT:
-    # User can only access THEIR forecast
-    # ========================================================
 
     cursor.execute(
         """
@@ -626,24 +496,18 @@ def get_forecast_by_id(
         """,
 
         (
-
             int(forecast_id),
-
             int(user_id)
-
         )
     )
 
-
     forecast = cursor.fetchone()
-
 
     if forecast is None:
 
         connection.close()
 
         return None
-
 
     cursor.execute(
         """
@@ -661,33 +525,22 @@ def get_forecast_by_id(
         )
     )
 
-
     values = cursor.fetchall()
 
     connection.close()
 
+    result = dict(forecast)
 
-    result = dict(
-        forecast
-    )
-
-
-    result[
-        "forecast"
-    ] = [
-
+    result["forecast"] = [
         dict(row)
-
         for row in values
-
     ]
-
 
     return result
 
 
 # ============================================================
-# DELETE FORECAST
+# DELETE USER FORECAST
 # ============================================================
 
 def delete_forecast(
@@ -696,66 +549,33 @@ def delete_forecast(
 ):
 
     connection = get_connection()
-
     cursor = connection.cursor()
 
-
-    # ========================================================
-    # First verify ownership
-    # ========================================================
-
-    cursor.execute(
-        """
-        SELECT id
-
-        FROM forecasts
-
-        WHERE id = ?
-
-        AND user_id = ?
-        """,
-
-        (
-
-            int(forecast_id),
-
-            int(user_id)
-
-        )
-    )
-
-
-    forecast = cursor.fetchone()
-
-
-    if forecast is None:
-
-        connection.close()
-
-        return False
-
-
-    # ========================================================
-    # Delete weekly values
-    # ========================================================
-
+    # Weekly values
     cursor.execute(
         """
         DELETE FROM forecast_values
 
         WHERE forecast_id = ?
+
+        AND forecast_id IN (
+
+            SELECT id
+            FROM forecasts
+            WHERE id = ?
+            AND user_id = ?
+
+        )
         """,
 
         (
             int(forecast_id),
+            int(forecast_id),
+            int(user_id)
         )
     )
 
-
-    # ========================================================
-    # Delete main forecast
-    # ========================================================
-
+    # Main forecast
     cursor.execute(
         """
         DELETE FROM forecasts
@@ -766,120 +586,21 @@ def delete_forecast(
         """,
 
         (
-
             int(forecast_id),
-
             int(user_id)
-
         )
     )
 
-
-    deleted = (
-        cursor.rowcount > 0
-    )
-
+    deleted = cursor.rowcount > 0
 
     connection.commit()
-
     connection.close()
-
 
     return deleted
 
-def create_user(
-    name,
-    email,
-    password_hash
-):
-
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    try:
-
-        cursor.execute(
-            """
-            INSERT INTO users (
-                name,
-                email,
-                password_hash,
-                created_at
-            )
-
-            VALUES (?, ?, ?, ?)
-            """,
-
-            (
-                name,
-                email,
-                password_hash,
-                datetime.now().isoformat()
-            )
-        )
-
-        connection.commit()
-
-        user_id = cursor.lastrowid
-
-        connection.close()
-
-        return user_id
-
-    except sqlite3.IntegrityError:
-
-        connection.close()
-
-        return None
-
-
-def get_user_by_email(email):
-
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        SELECT *
-        FROM users
-        WHERE email = ?
-        """,
-        (email,)
-    )
-
-    row = cursor.fetchone()
-
-    connection.close()
-
-    return dict(row) if row else None
-
-
-def get_user_by_id(user_id):
-
-    connection = get_connection()
-
-    cursor = connection.cursor()
-
-    cursor.execute(
-        """
-        SELECT id, name, email, created_at
-        FROM users
-        WHERE id = ?
-        """,
-        (user_id,)
-    )
-
-    row = cursor.fetchone()
-
-    connection.close()
-
-    return dict(row) if row else None
-
 
 # ============================================================
-# INITIALIZE DATABASE
+# INITIALIZE
 # ============================================================
 
 initialize_database()

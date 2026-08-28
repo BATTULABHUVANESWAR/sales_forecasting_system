@@ -1,17 +1,15 @@
 from flask import Blueprint, jsonify
 
-from backend.auth import token_required
-
 from backend.database.database import (
     get_forecast_history,
     get_forecast_by_id,
     delete_forecast
 )
 
+from backend.auth_utils import (
+    get_current_user_id
+)
 
-# ============================================================
-# BLUEPRINT
-# ============================================================
 
 history_bp = Blueprint(
     "history",
@@ -28,13 +26,20 @@ history_bp = Blueprint(
     "",
     methods=["GET"]
 )
-@token_required
-def history(user_id):
+def history():
+
+    user_id = get_current_user_id()
+
+    if user_id is None:
+
+        return jsonify({
+            "success": False,
+            "error": "Authentication required."
+        }), 401
 
     records = get_forecast_history(
         user_id
     )
-
 
     return jsonify({
         "success": True,
@@ -50,17 +55,23 @@ def history(user_id):
     "/<int:forecast_id>",
     methods=["GET"]
 )
-@token_required
 def single_forecast(
-    user_id,
     forecast_id
 ):
+
+    user_id = get_current_user_id()
+
+    if user_id is None:
+
+        return jsonify({
+            "success": False,
+            "error": "Authentication required."
+        }), 401
 
     result = get_forecast_by_id(
         forecast_id,
         user_id
     )
-
 
     if result is None:
 
@@ -68,7 +79,6 @@ def single_forecast(
             "success": False,
             "error": "Forecast not found."
         }), 404
-
 
     return jsonify({
         "success": True,
@@ -84,17 +94,23 @@ def single_forecast(
     "/<int:forecast_id>",
     methods=["DELETE"]
 )
-@token_required
 def remove_forecast(
-    user_id,
     forecast_id
 ):
+
+    user_id = get_current_user_id()
+
+    if user_id is None:
+
+        return jsonify({
+            "success": False,
+            "error": "Authentication required."
+        }), 401
 
     deleted = delete_forecast(
         forecast_id,
         user_id
     )
-
 
     if not deleted:
 
@@ -102,7 +118,6 @@ def remove_forecast(
             "success": False,
             "error": "Forecast not found."
         }), 404
-
 
     return jsonify({
         "success": True,

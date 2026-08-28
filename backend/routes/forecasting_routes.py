@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 from huggingface_hub import hf_hub_download
-
+from backend.auth_utils import get_current_user_id
 
 # ============================================================
 # FORECASTING ENGINE
@@ -291,6 +291,15 @@ def forecast():
 
         # Authentication
 
+        user_id = get_current_user_id()
+
+        if user_id is None:
+
+            return jsonify({
+                "success": False,
+                "error": "Authentication required."
+            }), 401
+        
         header = request.headers.get(
             "Authorization",
             ""
@@ -1064,7 +1073,7 @@ def forecast():
         forecast_id = save_forecast(
 
             user_id=user_id,
-            
+
             store_id=str(
                 store[
                     "store_id"
