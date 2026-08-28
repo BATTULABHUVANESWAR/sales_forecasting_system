@@ -9,6 +9,9 @@ import {
     X,
 } from "lucide-react";
 
+import { logout } from "../services/auth";
+import { useNavigate } from "react-router-dom";
+
 import "./Layout.css";
 
 
@@ -20,6 +23,17 @@ function SideBar({
     mobileMenuOpen,
     closeMobileMenu,
 }) {
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+
+        logout();
+
+        navigate("/login", {
+            replace: true
+        });
+    };
 
     const getNavClass = ({ isActive }) =>
         `nav-item ${isActive ? "active" : ""}`;
@@ -204,6 +218,38 @@ function SideBar({
                     </span>
 
                 </div>
+
+                <div className="sidebar-user">
+
+                    <div className="sidebar-user-avatar">
+                        {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+
+                    <div className="sidebar-user-info">
+
+                        <strong>
+                            {user?.name || "User"}
+                        </strong>
+
+                        <span>
+                            {user?.email || ""}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    className="bottom-item"
+                    onClick={handleLogout}
+                >
+                    <LogOut size={17} />
+
+                    <span>
+                        Logout
+                    </span>
+                </button>
 
             </div>
 

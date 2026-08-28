@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 
 import pandas as pd
 import numpy as np
+import jwt
+import os
 
 from pathlib import Path
 
@@ -29,6 +31,11 @@ from backend.database.database import (
     save_forecast
 )
 
+
+SECRET_KEY = os.getenv(
+    "JWT_SECRET",
+    "change-this-secret-key"
+)
 
 # ============================================================
 # BLUEPRINT
@@ -282,6 +289,45 @@ def forecast():
 
     try:
 
+        # Authentication
+
+        header = request.headers.get(
+            "Authorization",
+            ""
+        )
+
+        if not header.startswith("Bearer "):
+
+            return jsonify({
+                "success": False,
+                "error": "Authentication required."
+            }), 401
+
+
+        token = header.split(
+            " ",
+            1
+        )[1]
+
+
+        try:
+
+            payload = jwt.decode(
+                token,
+                SECRET_KEY,
+                algorithms=["HS256"]
+            )
+
+            user_id = payload["user_id"]
+
+        except Exception:
+
+            return jsonify({
+                "success": False,
+                "error": "Invalid or expired token."
+            }), 401
+
+        
         # ====================================================
         # REQUEST
         # ====================================================
@@ -1017,6 +1063,8 @@ def forecast():
 
         forecast_id = save_forecast(
 
+            user_id=user_id,
+            
             store_id=str(
                 store[
                     "store_id"

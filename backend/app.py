@@ -26,6 +26,10 @@ from backend.routes.history_routes import (
     history_bp
 )
 
+from backend.routes.auth_routes import (
+    auth_bp
+)
+
 
 # ============================================================
 # APPLICATION
@@ -64,6 +68,9 @@ app.register_blueprint(
     history_bp
 )
 
+app.register_blueprint(
+    auth_bp
+)
 
 # ============================================================
 # HEALTH CHECK
