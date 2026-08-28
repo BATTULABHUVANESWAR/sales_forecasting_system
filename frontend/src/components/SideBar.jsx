@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import {
     LayoutDashboard,
@@ -7,10 +7,10 @@ import {
     BarChart2,
     Circle,
     X,
+    LogOut,
 } from "lucide-react";
 
 import { logout } from "../services/auth";
-import { useNavigate } from "react-router-dom";
 
 import "./Layout.css";
 
@@ -26,6 +26,20 @@ function SideBar({
 
     const navigate = useNavigate();
 
+
+    // ========================================================
+    // CURRENT USER
+    // ========================================================
+
+    const user = JSON.parse(
+        localStorage.getItem("user") || "null"
+    );
+
+
+    // ========================================================
+    // LOGOUT
+    // ========================================================
+
     const handleLogout = () => {
 
         logout();
@@ -34,6 +48,11 @@ function SideBar({
             replace: true
         });
     };
+
+
+    // ========================================================
+    // NAVIGATION CLASS
+    // ========================================================
 
     const getNavClass = ({ isActive }) =>
         `nav-item ${isActive ? "active" : ""}`;
@@ -60,7 +79,6 @@ function SideBar({
                     alt="SalesPulse"
                     className="salespulse-logo-image"
                 />
-
 
                 <div className="brand-text">
 
@@ -206,6 +224,9 @@ function SideBar({
 
             <div className="sidebar-bottom">
 
+
+                {/* SYSTEM STATUS */}
+
                 <div className="system-status">
 
                     <Circle
@@ -219,11 +240,19 @@ function SideBar({
 
                 </div>
 
+
+                {/* USER */}
+
                 <div className="sidebar-user">
 
                     <div className="sidebar-user-avatar">
-                        {user?.name?.charAt(0).toUpperCase() || "U"}
+
+                        {user?.name
+                            ?.charAt(0)
+                            .toUpperCase() || "U"}
+
                     </div>
+
 
                     <div className="sidebar-user-info">
 
@@ -239,16 +268,21 @@ function SideBar({
 
                 </div>
 
+
+                {/* LOGOUT */}
+
                 <button
                     type="button"
                     className="bottom-item"
                     onClick={handleLogout}
                 >
+
                     <LogOut size={17} />
 
                     <span>
                         Logout
                     </span>
+
                 </button>
 
             </div>
