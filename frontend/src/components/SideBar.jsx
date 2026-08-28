@@ -5,12 +5,8 @@ import {
     TrendingUp,
     History,
     BarChart2,
-    Store,
-    Package,
-    Brain,
-    Settings,
-    LogOut,
     Circle,
+    X,
 } from "lucide-react";
 
 import "./Layout.css";
@@ -20,7 +16,10 @@ import "./Layout.css";
    SIDEBAR
    ============================================================ */
 
-function SideBar() {
+function SideBar({
+    mobileMenuOpen,
+    closeMobileMenu,
+}) {
 
     const getNavClass = ({ isActive }) =>
         `nav-item ${isActive ? "active" : ""}`;
@@ -28,7 +27,13 @@ function SideBar() {
 
     return (
 
-        <aside className="sidebar">
+        <aside
+            className={`sidebar ${
+                mobileMenuOpen
+                    ? "mobile-open"
+                    : ""
+            }`}
+        >
 
             {/* =================================================
                 BRAND
@@ -36,10 +41,11 @@ function SideBar() {
 
             <div className="brand">
 
-                <img src="/salespulse-icon-64.png"
-                     alt="SalesPulse"
-                     className="salespulse-logo-image"
-                 />
+                <img
+                    src="/salespulse-icon-64.png"
+                    alt="SalesPulse"
+                    className="salespulse-logo-image"
+                />
 
 
                 <div className="brand-text">
@@ -53,6 +59,20 @@ function SideBar() {
                     </span>
 
                 </div>
+
+
+                {/* MOBILE CLOSE BUTTON */}
+
+                <button
+                    type="button"
+                    className="mobile-sidebar-close"
+                    onClick={closeMobileMenu}
+                    aria-label="Close navigation"
+                >
+
+                    <X size={18} />
+
+                </button>
 
             </div>
 
@@ -79,6 +99,7 @@ function SideBar() {
                         to="/"
                         end
                         className={getNavClass}
+                        onClick={closeMobileMenu}
                     >
 
                         <LayoutDashboard size={18} />
@@ -106,6 +127,7 @@ function SideBar() {
                     <NavLink
                         to="/forecast"
                         className={getNavClass}
+                        onClick={closeMobileMenu}
                     >
 
                         <TrendingUp size={18} />
@@ -120,6 +142,7 @@ function SideBar() {
                     <NavLink
                         to="/history"
                         className={getNavClass}
+                        onClick={closeMobileMenu}
                     >
 
                         <History size={18} />
@@ -147,6 +170,7 @@ function SideBar() {
                     <NavLink
                         to="/analytics"
                         className={getNavClass}
+                        onClick={closeMobileMenu}
                     >
 
                         <BarChart2 size={18} />
@@ -167,7 +191,6 @@ function SideBar() {
             ================================================= */}
 
             <div className="sidebar-bottom">
-
 
                 <div className="system-status">
 
