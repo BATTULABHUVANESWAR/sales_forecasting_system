@@ -2,7 +2,7 @@ import sqlite3
 
 from pathlib import Path
 from datetime import datetime
-
+from zoneinfo import ZoneInfo
 
 # ============================================================
 # PROJECT PATHS
@@ -306,7 +306,7 @@ def save_forecast(
     connection = get_connection()
     cursor = connection.cursor()
 
-    created_at = datetime.now().isoformat()
+    created_at = datetime.now(ZoneInfo("Asia/Kolkata")).isoformat()
 
     # --------------------------------------------------------
     # Main forecast
