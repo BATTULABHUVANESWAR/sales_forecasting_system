@@ -28,7 +28,49 @@ function ForecastChart({
     };
 
 
-    if (!data.length) {
+    // ============================================================
+    // PREPARE FORECAST DATA
+    // ============================================================
+
+    const forecastData = data
+        .filter((item) => {
+
+            return (
+                item &&
+                item.date &&
+                item.forecast !== undefined &&
+                item.forecast !== null
+            );
+
+        })
+        .map((item) => ({
+
+            ...item,
+
+            date: String(
+                item.date
+            ),
+
+            forecast: Number(
+                item.forecast
+            ),
+
+        }))
+        .sort((a, b) => {
+
+            return (
+                new Date(a.date) -
+                new Date(b.date)
+            );
+
+        });
+
+
+    // ============================================================
+    // EMPTY STATE
+    // ============================================================
+
+    if (!forecastData.length) {
 
         return (
 
@@ -50,6 +92,10 @@ function ForecastChart({
     }
 
 
+    // ============================================================
+    // CHART
+    // ============================================================
+
     return (
 
         <div
@@ -65,7 +111,7 @@ function ForecastChart({
             >
 
                 <LineChart
-                    data={data}
+                    data={forecastData}
                     margin={{
                         top: 10,
                         right: 18,
